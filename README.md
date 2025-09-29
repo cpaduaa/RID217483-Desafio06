@@ -23,9 +23,6 @@ O banco de dados possui as seguintes tabelas:
  public | stock       | table | 
 (7 rows)                            |
 
-**Exemplo de relacionamento:**  
-
-![Esquema do banco](./assets/db_schema.png)
 
 ---
 
