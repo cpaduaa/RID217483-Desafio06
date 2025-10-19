@@ -4,24 +4,24 @@ export const createSaleController = async (req, res) => {
   try {
     const { order_id, customer_id, payment_method } = req.body;
     
-    // Validações obrigatórias
+    // Required validations
     if (!order_id || !customer_id || !payment_method) {
       return res.status(400).json({ 
-        error: 'Campos obrigatórios: order_id, customer_id, payment_method' 
+        error: 'Required fields: order_id, customer_id, payment_method' 
       });
     }
     
-    // Validar tipos
+    // Validate types
     if (typeof order_id !== 'number' || order_id <= 0) {
-      return res.status(400).json({ error: 'order_id deve ser um número válido' });
+      return res.status(400).json({ error: 'order_id must be a valid number' });
     }
     
     if (typeof customer_id !== 'number' || customer_id <= 0) {
-      return res.status(400).json({ error: 'customer_id deve ser um número válido' });
+      return res.status(400).json({ error: 'customer_id must be a valid number' });
     }
     
     if (typeof payment_method !== 'string' || payment_method.trim().length === 0) {
-      return res.status(400).json({ error: 'Método de pagamento deve ser um texto válido' });
+      return res.status(400).json({ error: 'Payment method must be a valid text' });
     }
     
     const sale = await saleService.createSale({
@@ -33,10 +33,10 @@ export const createSaleController = async (req, res) => {
     res.status(201).json(sale);
   } catch (error) {
     console.error(error);
-    if (error.message.includes('não encontrado') || 
-        error.message.includes('já foi finalizado') ||
-        error.message.includes('Já existe uma venda') ||
-        error.message.includes('Estoque insuficiente')) {
+    if (error.message.includes('not found') || 
+        error.message.includes('already completed') ||
+        error.message.includes('sale already exists') ||
+        error.message.includes('Insufficient stock')) {
       return res.status(400).json({ error: error.message });
     }
     res.status(500).json({ error: error.message });
@@ -49,7 +49,7 @@ export const getSalesController = async (req, res) => {
     res.json(sales);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro ao buscar vendas' });
+    res.status(500).json({ error: 'Error fetching sales' });
   }
 };
 
@@ -59,26 +59,26 @@ export const getSaleByIdController = async (req, res) => {
     const saleId = parseInt(id);
     
     if (isNaN(saleId) || saleId <= 0) {
-      return res.status(400).json({ error: 'ID da venda deve ser um número válido' });
+      return res.status(400).json({ error: 'Sale ID must be a valid number' });
     }
     
     const sale = await saleService.getSaleById(saleId);
     if (!sale) {
-      return res.status(404).json({ error: 'Venda não encontrada' });
+      return res.status(404).json({ error: 'Sale not found' });
     }
     
-    // Converter shipping_address de volta para objeto se for string JSON
+    // Convert shipping_address back to object if it's a JSON string
     if (sale.order && sale.order.shipping_address) {
       try {
         sale.order.shipping_address = JSON.parse(sale.order.shipping_address);
       } catch {
-        // Se não for JSON válido, manter como string
+        // If not valid JSON, keep as string
       }
     }
     
     res.json(sale);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro ao buscar venda' });
+    res.status(500).json({ error: 'Error fetching sale' });
   }
 };

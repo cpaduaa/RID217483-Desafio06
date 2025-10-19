@@ -1,36 +1,36 @@
 import prisma from '../prisma.js';
 
 export const createOrder = async (customerId, items, shippingAddress) => {
-  // Validar se o cliente existe
+  // Validate if customer exists
   const customer = await prisma.customers.findUnique({
     where: { id: customerId }
   });
   
   if (!customer) {
-    throw new Error('Cliente não encontrado');
+    throw new Error('Customer not found');
   }
   
-  // Validar se todos os produtos existem e estão ativos
+  // Validate if all products exist and are active
   for (const item of items) {
     const product = await prisma.products.findUnique({
       where: { id: item.product_id }
     });
     
     if (!product) {
-      throw new Error(`Produto ${item.product_id} não encontrado`);
+      throw new Error(`Product ${item.product_id} not found`);
     }
     
     if (!product.active) {
-      throw new Error(`Produto ${product.name} não está ativo`);
+      throw new Error(`Product ${product.name} is not active`);
     }
     
-    // Verificar estoque
+    // Check stock
     const stock = await prisma.stock.findUnique({
       where: { product_id: item.product_id }
     });
     
     if (!stock || stock.quantity < item.quantity) {
-      throw new Error(`Estoque insuficiente para o produto ${product.name}`);
+      throw new Error(`Insufficient stock for product ${product.name}`);
     }
   }
   
@@ -44,7 +44,7 @@ export const createOrder = async (customerId, items, shippingAddress) => {
       customer_id: customerId,
       status: 'pending',
       total_amount: totalAmount,
-      shipping_address: JSON.stringify(shippingAddress), // Converter objeto para JSON string
+      shipping_address: JSON.stringify(shippingAddress), // Convert object to JSON string
       order_items: {
         create: items.map(item => ({
           product_id: item.product_id,
@@ -59,7 +59,7 @@ export const createOrder = async (customerId, items, shippingAddress) => {
 
   return {
     ...order,
-    shipping_address: JSON.parse(order.shipping_address) // Retornar como objeto
+    shipping_address: JSON.parse(order.shipping_address) // Return as object
   };
 };
 

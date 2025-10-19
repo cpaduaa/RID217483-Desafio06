@@ -19,7 +19,7 @@ model customers {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
   
-  // Relacionamentos
+  // Relationships
   orders    orders[]
   sales     sales[]
   
@@ -37,7 +37,7 @@ model products {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   
-  // Relacionamentos
+  // Relationships
   stock       stock?
   order_items order_items[]
   sale_items  sale_items[]
@@ -50,11 +50,11 @@ model orders {
   customer_id      Int
   status           String   @default("pending")
   total_amount     Float
-  shipping_address String   // JSON como string
+  shipping_address String   // JSON as string
   created_at       DateTime @default(now())
   updated_at       DateTime @updatedAt
   
-  // Relacionamentos
+  // Relationships
   customer    customers     @relation(fields: [customer_id], references: [id])
   order_items order_items[]
   sales       sales[]
@@ -70,7 +70,7 @@ model order_items {
   quantity   Int
   subtotal   Float
   
-  // Relacionamentos
+  // Relationships
   order   orders   @relation(fields: [order_id], references: [id])
   product products @relation(fields: [product_id], references: [id])
   
@@ -88,7 +88,7 @@ model sales {
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
   
-  // Relacionamentos
+  // Relationships
   order      orders      @relation(fields: [order_id], references: [id])
   customer   customers   @relation(fields: [customer_id], references: [id])
   sale_items sale_items[]
@@ -104,7 +104,7 @@ model sale_items {
   quantity   Int
   subtotal   Float
   
-  // Relacionamentos
+  // Relationships
   sale    sales    @relation(fields: [sale_id], references: [id])
   product products @relation(fields: [product_id], references: [id])
   
@@ -118,7 +118,7 @@ model stock {
   warehouse    String @default("Main Warehouse")
   updated_at   DateTime @updatedAt
   
-  // Relacionamentos
+  // Relationships
   product products @relation(fields: [product_id], references: [id])
   
   @@map("stock")

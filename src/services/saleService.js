@@ -4,30 +4,30 @@ export const createSale = async (data) => {
   const { order_id, customer_id, payment_method } = data;
 
   return await prisma.$transaction(async (tx) => {
-    // Verificar se o pedido existe e buscar itens
+    // Check if order exists and fetch items
     const order = await tx.orders.findUnique({
       where: { id: order_id },
       include: { order_items: true }
     });
 
     if (!order) {
-      throw new Error('Pedido não encontrado');
+      throw new Error('Order not found');
     }
 
     if (order.status === 'completed') {
-      throw new Error('Pedido já foi finalizado');
+      throw new Error('Order already completed');
     }
 
-    // Verificar se já existe uma venda para este pedido
+    // Check if a sale already exists for this order
     const existingSale = await tx.sales.findUnique({
       where: { order_id }
     });
 
     if (existingSale) {
-      throw new Error('Já existe uma venda para este pedido');
+      throw new Error('A sale already exists for this order');
     }
 
-    // Verificar estoque e atualizar
+    // Check and update stock
     for (const item of order.order_items) {
       const stock = await tx.stock.findUnique({
         where: { product_id: item.product_id }
@@ -38,17 +38,17 @@ export const createSale = async (data) => {
           where: { id: item.product_id },
           select: { name: true }
         });
-        throw new Error(`Estoque insuficiente para ${product?.name || item.product_id}`);
+        throw new Error(`Insufficient stock for ${product?.name || item.product_id}`);
       }
 
-      // Reduzir estoque
+      // Reduce stock
       await tx.stock.update({
         where: { product_id: item.product_id },
         data: { quantity: stock.quantity - item.quantity }
       });
     }
 
-    // Criar a venda
+    // Create the sale
     const sale = await tx.sales.create({
       data: {
         order_id,
@@ -69,7 +69,7 @@ export const createSale = async (data) => {
       include: { sale_items: true }
     });
 
-    // Atualizar status do pedido
+    // Update order status
     await tx.orders.update({
       where: { id: order_id },
       data: { status: 'completed' }

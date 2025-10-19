@@ -19,16 +19,16 @@ export const getStockByProductId = async (productId) => {
 };
 
 export const createOrUpdateStock = async (productId, quantity, minQuantity = 5) => {
-  // Verificar se o produto existe
+  // Check if product exists
   const product = await prisma.products.findUnique({
     where: { id: productId }
   });
   
   if (!product) {
-    throw new Error('Produto não encontrado');
+    throw new Error('Product not found');
   }
   
-  // Usar upsert para criar ou atualizar o estoque
+  // Use upsert to create or update stock
   const stock = await prisma.stock.upsert({
     where: { product_id: productId },
     update: {
@@ -55,7 +55,7 @@ export const createOrUpdateStock = async (productId, quantity, minQuantity = 5) 
 
 export const adjustStock = async (productId, quantityChange, reason = '') => {
   return await prisma.$transaction(async (tx) => {
-    // Buscar estoque atual
+    // Get current stock
     const currentStock = await tx.stock.findUnique({
       where: { product_id: productId },
       include: {
@@ -69,16 +69,16 @@ export const adjustStock = async (productId, quantityChange, reason = '') => {
     });
     
     if (!currentStock) {
-      throw new Error('Estoque não encontrado para este produto');
+      throw new Error('Stock not found for this product');
     }
     
     const newQuantity = currentStock.quantity + quantityChange;
     
     if (newQuantity < 0) {
-      throw new Error('Quantidade insuficiente em estoque');
+      throw new Error('Insufficient stock quantity');
     }
     
-    // Atualizar estoque
+    // Update stock
     const updatedStock = await tx.stock.update({
       where: { product_id: productId },
       data: { quantity: newQuantity },

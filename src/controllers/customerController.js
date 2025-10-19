@@ -4,22 +4,22 @@ export const createCustomerController = async (req, res) => {
   try {
     const { name, email, phone, address, city, state, zip_code } = req.body;
     
-    // Validações obrigatórias
+    // Required validations
     if (!name || !email) {
       return res.status(400).json({ 
-        error: 'Campos obrigatórios: name, email' 
+        error: 'Required fields: name, email' 
       });
     }
     
-    // Validar email
+    // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: 'Email inválido' });
+      return res.status(400).json({ error: 'Invalid email' });
     }
     
-    // Validar tipos de dados
+    // Validate data types
     if (typeof name !== 'string' || name.trim().length === 0) {
-      return res.status(400).json({ error: 'Nome deve ser um texto válido' });
+      return res.status(400).json({ error: 'Name must be a valid text' });
     }
     
     const customer = await customerService.createCustomer({
@@ -35,7 +35,7 @@ export const createCustomerController = async (req, res) => {
     res.status(201).json(customer);
   } catch (error) {
     if (error.code === 'P2002') {
-      return res.status(400).json({ error: 'Email já está em uso' });
+      return res.status(400).json({ error: 'Email already in use' });
     }
     res.status(500).json({ error: error.message });
   }
@@ -56,12 +56,12 @@ export const getCustomerByIdController = async (req, res) => {
     const customerId = parseInt(id);
     
     if (isNaN(customerId) || customerId <= 0) {
-      return res.status(400).json({ error: 'ID do cliente deve ser um número válido' });
+      return res.status(400).json({ error: 'Customer ID must be a valid number' });
     }
     
     const customer = await customerService.getCustomerById(customerId);
     if (!customer) {
-      return res.status(404).json({ error: 'Cliente não encontrado' });
+      return res.status(404).json({ error: 'Customer not found' });
     }
     
     res.json(customer);
@@ -76,22 +76,22 @@ export const updateCustomerController = async (req, res) => {
     const customerId = parseInt(id);
     
     if (isNaN(customerId) || customerId <= 0) {
-      return res.status(400).json({ error: 'ID do cliente deve ser um número válido' });
+      return res.status(400).json({ error: 'Customer ID must be a valid number' });
     }
     
     const { name, email, phone, address, city, state, zip_code } = req.body;
     
-    // Verificar se o cliente existe
+    // Check if customer exists
     const existingCustomer = await customerService.getCustomerById(customerId);
     if (!existingCustomer) {
-      return res.status(404).json({ error: 'Cliente não encontrado' });
+      return res.status(404).json({ error: 'Customer not found' });
     }
     
-    // Validar email se fornecido
+    // Validate email if provided
     if (email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
-        return res.status(400).json({ error: 'Email inválido' });
+        return res.status(400).json({ error: 'Invalid email' });
       }
     }
     
@@ -108,7 +108,7 @@ export const updateCustomerController = async (req, res) => {
     res.json(customer);
   } catch (error) {
     if (error.code === 'P2002') {
-      return res.status(400).json({ error: 'Email já está em uso' });
+      return res.status(400).json({ error: 'Email already in use' });
     }
     res.status(500).json({ error: error.message });
   }
@@ -120,13 +120,13 @@ export const deleteCustomerController = async (req, res) => {
     const customerId = parseInt(id);
     
     if (isNaN(customerId) || customerId <= 0) {
-      return res.status(400).json({ error: 'ID do cliente deve ser um número válido' });
+      return res.status(400).json({ error: 'Customer ID must be a valid number' });
     }
     
-    // Verificar se o cliente existe
+    // Check if customer exists
     const existingCustomer = await customerService.getCustomerById(customerId);
     if (!existingCustomer) {
-      return res.status(404).json({ error: 'Cliente não encontrado' });
+      return res.status(404).json({ error: 'Customer not found' });
     }
     
     await customerService.deleteCustomer(customerId);
@@ -134,7 +134,7 @@ export const deleteCustomerController = async (req, res) => {
   } catch (error) {
     if (error.code === 'P2003') {
       return res.status(400).json({ 
-        error: 'Não é possível excluir cliente com pedidos associados' 
+        error: 'Cannot delete customer with associated orders' 
       });
     }
     res.status(500).json({ error: error.message });
