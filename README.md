@@ -39,28 +39,82 @@ O banco de dados possui as seguintes tabelas:
 
 ## 🔧 Como rodar o projeto
 
-1. Instale dependências:
+1. **Instale dependências:**
 
 ```bash
 npm install
-Configure o arquivo .env com os dados do PostgreSQL:
+```
 
-bash
-Copiar código
+2. **Configure o arquivo .env com os dados do PostgreSQL:**
+
+```bash
 DATABASE_URL=postgresql://usuario:senha@localhost:5432/seu_banco
-Rode migrações do Prisma:
+```
 
-bash
-Copiar código
+3. **Rode migrações do Prisma:**
+
+```bash
 npx prisma migrate dev
-Inicie o servidor:
+```
 
-bash
-Copiar código
+4. **Inicie o servidor:**
+
+```bash
 npm run dev
-Teste as rotas no Postman.
+```
 
-🔧 Rotas da API
+5. **Teste as rotas no Postman ou Insomnia.**
+
+---
+
+## 🧪 **Testando o Banco de Dados**
+
+Para verificar se o banco de dados está funcionando corretamente, execute o script de teste:
+
+```bash
+node test-db.js
+```
+
+### **O que o teste verifica:**
+- ✅ **Conexão com o banco** PostgreSQL
+- ✅ **Criação de cliente** com validações
+- ✅ **Criação de produto** com UUID automático
+- ✅ **Gerenciamento de estoque** com quantidades
+- ✅ **Criação de pedido** com itens relacionados
+- ✅ **Relacionamentos** entre todas as tabelas
+- ✅ **Consultas complexas** com joins
+
+### **Resultado esperado:**
+```
+🔍 Testing database connection...
+
+1️⃣ Creating a test customer...
+✅ Customer created: { id: 1, name: 'John Doe', ... }
+
+2️⃣ Creating a test product...
+✅ Product created: { id: 'uuid...', sku: 'TEST001', ... }
+
+3️⃣ Creating stock for the product...
+✅ Stock created: { quantity: 100, ... }
+
+4️⃣ Creating a test order...
+✅ Order created: { id: 1, total_amount: 59.8, ... }
+
+5️⃣ Fetching all data with relationships...
+✅ All customers with orders: [...]
+
+🎉 All database tests passed! Database is working correctly.
+```
+
+### **Visualizar dados graficamente:**
+```bash
+npx prisma studio
+```
+Acesse: `http://localhost:5555`
+
+---
+
+## 🛠️ Rotas da API
 
 ## 1️⃣ Clientes
 
