@@ -1,8 +1,19 @@
 # DNCommerce - Sistema de Gestão de Produtos e Vendas
 
-Sistema de gerenciamento de estoque, produtos e vendas para a loja online DNCommerce, desenvolvido com **Node.js**, **Express** e **PostgreSQL**.  
+Sistema completo de gerenciamento de estoque, produtos, clientes e vendas para a loja online DNCommerce, desenvolvido com **Node.js**, **Express**, **Prisma ORM** e **PostgreSQL**.  
 
-Permite cadastrar produtos, gerenciar estoque, criar pedidos e registrar vendas.
+Permite cadastrar produtos, gerenciar clientes, controlar estoque, criar pedidos e registrar vendas com controle de transações.
+
+## 🔄 **Correções Implementadas**
+
+### **Problemas Corrigidos:**
+- ✅ **Schema do banco:** Adicionados relacionamentos corretos entre tabelas
+- ✅ **Validações:** Implementadas validações em todos os controllers
+- ✅ **Controller de produtos:** Corrigido erro de conversão UUID → Number
+- ✅ **CRUD de clientes:** Implementado sistema completo de clientes
+- ✅ **Controle de estoque:** Sistema real de entrada/saída de estoque
+- ✅ **Sistema de vendas:** Controle de transações e atualização automática de estoque
+- ✅ **Timestamps:** Adicionados campos created_at e updated_at
 
 ---
 
@@ -49,10 +60,43 @@ Copiar código
 npm run dev
 Teste as rotas no Postman.
 
-🛠 Rotas da API
-1️⃣ Produtos
-Criar produto
-POST /products
+🔧 Rotas da API
+
+## 1️⃣ Clientes
+
+### Criar cliente
+**POST /customers**
+
+```json
+{
+  "name": "João Silva",
+  "email": "joao@email.com",
+  "phone": "(11) 99999-9999",
+  "address": "Rua das Flores 123",
+  "city": "São Paulo",
+  "state": "SP",
+  "zip_code": "01234-567"
+}
+```
+
+### Listar clientes
+**GET /customers**
+
+### Buscar cliente por ID
+**GET /customers/:id**
+
+### Atualizar cliente
+**PUT /customers/:id**
+
+### Excluir cliente
+**DELETE /customers/:id**
+
+---
+
+## 2️⃣ Produtos
+
+### Criar produto
+**POST /products**
 
 Body (JSON):
 
@@ -79,22 +123,42 @@ Copiar código
   "cost_price": 15.50,
   "active": true
 }
-Listar produtos
-GET /products
+### Listar produtos
+**GET /products**
 
-Retorno:
+### Buscar produto por ID
+**GET /products/:id**
 
-json
-Copiar código
-[
-  {
-    "id": "6cd5f642-facf-4ae1-8337-8d18d61986c0",
-    "sku": "PRD001",
-    "name": "Shampoo XYZ",
-    "price": 29.90
-  }
-]
-2️⃣ Estoque
+---
+
+## 3️⃣ Estoque
+
+### Criar ou atualizar estoque
+**POST /stock**
+
+```json
+{
+  "product_id": "6cd5f642-facf-4ae1-8337-8d18d61986c0",
+  "quantity": 100,
+  "min_quantity": 10
+}
+```
+
+### Listar todos os estoques
+**GET /stock/all**
+
+### Buscar itens com estoque baixo
+**GET /stock/low**
+
+### Ajustar estoque (entrada/saída)
+**PATCH /stock/:product_id/adjust**
+
+```json
+{
+  "quantity_change": -5,
+  "reason": "Venda"
+}
+```
 Consultar estoque de um produto
 GET /stock/:product_id
 
@@ -113,9 +177,10 @@ Copiar código
   "quantity": 15,
   "min_quantity": 3
 }
-3️⃣ Pedidos
-Criar pedido
-POST /orders
+## 4️⃣ Pedidos
+
+### Criar pedido
+**POST /orders**
 
 Body (JSON):
 
@@ -140,9 +205,10 @@ Copiar código
   "items": [...],
   "status": "pending"
 }
-4️⃣ Vendas
-Criar venda
-POST /sales
+## 5️⃣ Vendas
+
+### Criar venda
+**POST /sales**
 
 Body (JSON):
 
@@ -164,3 +230,22 @@ Copiar código
   "status": "completed",
   "total": 94.80
 }
+```
+
+### Listar vendas
+**GET /sales**
+
+### Buscar venda por ID
+**GET /sales/:id**
+
+---
+
+## 📝 **Melhorias Implementadas**
+
+- **Validações robustas** em todas as rotas
+- **Controle de transações** nas vendas
+- **Atualização automática de estoque** nas vendas
+- **Sistema completo de clientes** com CRUD
+- **Controle avançado de estoque** com entrada/saída
+- **Relacionamentos corretos** entre todas as entidades
+- **Tratamento de erros** específicos e informativos

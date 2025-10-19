@@ -6,6 +6,7 @@ import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import saleRoutes from './routes/saleRoutes.js';
 import stockRoutes from './routes/stockRoutes.js';
+import customerRoutes from './routes/customerRoutes.js';
 
 dotenv.config();
 
@@ -19,6 +20,7 @@ app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 app.use('/sales', saleRoutes);
 app.use('/stock', stockRoutes);
+app.use('/customers', customerRoutes);
 
 app.get('/', (req, res) => {
   res.send('DNCommerce API is running');

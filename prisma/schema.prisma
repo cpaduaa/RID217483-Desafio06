@@ -8,58 +8,119 @@ generator client {
 }
 
 model customers {
-  id   Int    @id @default(autoincrement())
-  name String
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  phone     String?
+  address   String?
+  city      String?
+  state     String?
+  zip_code  String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  
+  // Relacionamentos
+  orders    orders[]
+  sales     sales[]
+  
+  @@map("customers")
 }
 
 model products {
   id          String  @id @default(uuid()) @db.Uuid
-  sku         String
+  sku         String  @unique
   name        String
   description String?
   price       Float
   cost_price  Float
-  active      Boolean
+  active      Boolean @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  
+  // Relacionamentos
+  stock       stock?
+  order_items order_items[]
+  sale_items  sale_items[]
+  
+  @@map("products")
 }
 
 model orders {
-  id               Int     @id @default(autoincrement())
+  id               Int      @id @default(autoincrement())
   customer_id      Int
-  status           String
+  status           String   @default("pending")
   total_amount     Float
-  shipping_address String
+  shipping_address String   // JSON como string
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+  
+  // Relacionamentos
+  customer    customers     @relation(fields: [customer_id], references: [id])
+  order_items order_items[]
+  sales       sales[]
+  
+  @@map("orders")
 }
 
 model order_items {
-  id         Int     @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   order_id   Int
-  product_id String  @db.Uuid
+  product_id String @db.Uuid
   unit_price Float
   quantity   Int
   subtotal   Float
+  
+  // Relacionamentos
+  order   orders   @relation(fields: [order_id], references: [id])
+  product products @relation(fields: [product_id], references: [id])
+  
+  @@map("order_items")
 }
 
 model sales {
-  id             Int     @id @default(autoincrement())
-  order_id       Int
+  id             Int       @id @default(autoincrement())
+  order_id       Int       @unique
   customer_id    Int
   payment_method String
   amount         Float
-  status         String
+  status         String    @default("pending")
   paid_at        DateTime?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  
+  // Relacionamentos
+  order      orders      @relation(fields: [order_id], references: [id])
+  customer   customers   @relation(fields: [customer_id], references: [id])
+  sale_items sale_items[]
+  
+  @@map("sales")
 }
 
 model sale_items {
-  id         Int     @id @default(autoincrement())
+  id         Int    @id @default(autoincrement())
   sale_id    Int
-  product_id String  @db.Uuid
+  product_id String @db.Uuid
   unit_price Float
   quantity   Int
   subtotal   Float
+  
+  // Relacionamentos
+  sale    sales    @relation(fields: [sale_id], references: [id])
+  product products @relation(fields: [product_id], references: [id])
+  
+  @@map("sale_items")
 }
 
 model stock {
-  product_id String  @id @db.Uuid
-  quantity   Int
+  product_id   String @id @db.Uuid
+  quantity     Int    @default(0)
+  min_quantity Int    @default(5)
+  warehouse    String @default("Main Warehouse")
+  updated_at   DateTime @updatedAt
+  
+  // Relacionamentos
+  product products @relation(fields: [product_id], references: [id])
+  
+  @@map("stock")
 }
 
